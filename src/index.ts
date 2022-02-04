@@ -4,6 +4,7 @@ moduleAlias.addAliases({
   '@server': sourcePath,
   '@config': `${sourcePath}/config`,
   '@domain': `${sourcePath}/domain`,
+  '@feature': `${sourcePath}/feature`,
 });
 
 import { createServer } from '@config/express';
