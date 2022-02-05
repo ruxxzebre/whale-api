@@ -21,6 +21,7 @@
   "author": "Dantis Mai <mtd.maithanhdanh@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
+    "@prisma/client": "^3.9.1",
     "commander": "^8.3.0",
     "cors": "^2.8.5",
     "dockerode": "^3.3.1",
@@ -47,6 +48,7 @@
     "jest-html-reporter": "^3.4.1",
     "nodemon": "^2.0.12",
     "prettier": "~2.3.2",
+    "prisma": "^3.9.1",
     "rimraf": "^3.0.2",
     "supertest": "^6.1.5",
     "ts-jest": "^27.0.3",

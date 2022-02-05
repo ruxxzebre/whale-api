@@ -1,6 +1,11 @@
 import Docker, { ContainerInfo } from 'dockerode';
 import { docker } from '@feature/docker/docker.service';
-import Stream from 'stream';
+import Stream, { PassThrough } from 'stream';
+import {
+  addContainerStreamsToMap,
+  attachEventListenerToStream,
+  ContainerStreamTypes,
+} from '@feature/container/container.utils';
 
 export const getContainerByID = (id: string): Docker.Container => {
   return docker.getContainer(id);
@@ -37,14 +42,11 @@ export const getContainersList = async (
   );
 };
 
-export const attachToContainer = async (id: string): Promise<void> => {
-  const stdOutStream = new Stream.PassThrough();
-  const stdErrStream = new Stream.PassThrough();
-  const logChunk = (chunk: Buffer) => {
-    console.log(chunk.toString('utf8'));
-  };
-  stdOutStream.on('data', logChunk);
-  stdErrStream.on('data', logChunk);
+export const passStreamsToContainer = async (
+  id: string,
+  stdOutStream: PassThrough,
+  stdErrStream: PassThrough,
+): Promise<NodeJS.ReadWriteStream> => {
   const container = getContainerByID(id);
   const stream = await container.attach({
     stream: true,
@@ -56,4 +58,18 @@ export const attachToContainer = async (id: string): Promise<void> => {
     stdOutStream.end('!stop!');
     stdErrStream.end('!stop!');
   });
+  return stream;
+};
+
+export const attachToContainer = async (id: string): Promise<void> => {
+  const stdOutStream = new Stream.PassThrough();
+  const stdErrStream = new Stream.PassThrough();
+  const logChunk = (chunk: Buffer) => {
+    console.log(chunk.toString('utf8'));
+  };
+
+  const stream = await passStreamsToContainer(id, stdOutStream, stdErrStream);
+  addContainerStreamsToMap(id, stdOutStream, stdErrStream, stream);
+  attachEventListenerToStream(id, ContainerStreamTypes.OUT, 'data', logChunk);
+  attachEventListenerToStream(id, ContainerStreamTypes.ERR, 'data', logChunk);
 };
