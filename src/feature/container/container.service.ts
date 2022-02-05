@@ -6,6 +6,8 @@ import {
   attachEventListenerToStream,
   ContainerStreamTypes,
 } from '@feature/container/container.utils';
+import { addContainer, addLog } from '@feature/container/container.model';
+import { Container } from '@generated/client';
 
 export const getContainerByID = (id: string): Docker.Container => {
   return docker.getContainer(id);
@@ -28,6 +30,9 @@ export const getContainerStatsByID = (
   return Promise.resolve({} as Docker.ContainerStats); */
   throw new Error('Deprecated');
 };
+
+export const checkContainerHealth = () => null; // TODO
+export const getSavedLogs = () => null; // TODO
 
 export const getContainersList = async (
   filter?: string[],
@@ -61,15 +66,39 @@ export const passStreamsToContainer = async (
   return stream;
 };
 
-export const attachToContainer = async (id: string): Promise<void> => {
+export const addContainerToStorage = async (id: string): Promise<Container> => {
+  const container = await inspectContainerByID(id);
+  return addContainer({
+    name: container.Name,
+    internal_id: id,
+    internal_pid: container.State.Pid.toString(),
+  });
+};
+
+export const attachToContainer = async (id: string): Promise<Container> => {
   const stdOutStream = new Stream.PassThrough();
   const stdErrStream = new Stream.PassThrough();
-  const logChunk = (chunk: Buffer) => {
-    console.log(chunk.toString('utf8'));
+  const saved = await addContainerToStorage(id);
+  const logChunkOut = async (chunk: Buffer) => {
+    await addLog(id, chunk, false);
+  };
+  const logChunkErr = async (chunk: Buffer) => {
+    await addLog(id, chunk, false);
   };
 
   const stream = await passStreamsToContainer(id, stdOutStream, stdErrStream);
   addContainerStreamsToMap(id, stdOutStream, stdErrStream, stream);
-  attachEventListenerToStream(id, ContainerStreamTypes.OUT, 'data', logChunk);
-  attachEventListenerToStream(id, ContainerStreamTypes.ERR, 'data', logChunk);
+  attachEventListenerToStream(
+    id,
+    ContainerStreamTypes.OUT,
+    'data',
+    logChunkOut,
+  );
+  attachEventListenerToStream(
+    id,
+    ContainerStreamTypes.ERR,
+    'data',
+    logChunkErr,
+  );
+  return saved;
 };

@@ -10,16 +10,31 @@ export const addContainer = async (
 };
 
 export const addLog = async (
-  containerId: number,
+  containerId: string,
   log: Buffer,
   error: boolean,
-): Promise<Logs> => {
+): Promise<Logs | null> => {
+  const container = await prisma.container.findFirst({
+    where: {
+      internal_id: containerId,
+    },
+  });
+  if (!container) return null;
   const addedLog = await prisma.logs.create({
     data: {
-      containerId,
+      containerId: container.id,
       data: log,
       error,
     },
   });
   return addedLog;
 };
+
+/**
+ * TODO
+ * Get all logs
+ * Get logs of container by id
+ * Get container from db
+ * Check if container is in db
+ * Check is listeners attached to container
+ */

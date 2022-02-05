@@ -23,8 +23,7 @@ export const getStatsOfContainerByID: RequestHandler = async (
 ) => {
   const id = req.params.id;
   try {
-    const data = await getContainerStatsByID(id);
-    console.log(data);
+    await getContainerStatsByID(id);
     res.send('OK!');
   } catch (e) {
     next(e);
@@ -37,8 +36,12 @@ export const getListOfContainers: RequestHandler = async (req, res) => {
   res.send(list);
 };
 
-export const attachListenerToContainer: RequestHandler = (req, res, _next) => {
+export const attachListenerToContainer: RequestHandler = async (
+  req,
+  res,
+  _next,
+) => {
   const id = req.params.id;
-  attachToContainer(id).then(() => console.log('ATTACHED'));
-  res.send('Attached!');
+  const container = await attachToContainer(id);
+  res.send(container);
 };
