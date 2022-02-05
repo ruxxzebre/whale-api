@@ -7,6 +7,7 @@ const router = Router();
 /**
  * Retrieve all logs
  */
+// TODO: resolve buffer query
 router.get('/', catchAsync(LogsController.getAllLogs));
 
 /**

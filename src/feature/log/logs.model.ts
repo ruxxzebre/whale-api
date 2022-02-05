@@ -21,7 +21,9 @@ export const addLog = async (
 };
 
 export const retrieveAllLogs = (): Promise<Logs[]> => {
-  return prisma.logs.findMany();
+  return prisma.logs.findMany().then((a) => {
+    return a;
+  });
 };
 
 type GetLogs = {
