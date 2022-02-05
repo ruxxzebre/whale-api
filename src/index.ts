@@ -1,11 +1,7 @@
 import * as moduleAlias from 'module-alias';
+import { getPathAliases } from '@utils/paths';
 const sourcePath = process.env.NODE_ENV === 'development' ? 'src' : 'build';
-moduleAlias.addAliases({
-  '@server': sourcePath,
-  '@config': `${sourcePath}/config`,
-  '@domain': `${sourcePath}/domain`,
-  '@feature': `${sourcePath}/feature`,
-});
+moduleAlias.addAliases(getPathAliases(sourcePath));
 
 import { createServer } from '@config/express';
 import { AddressInfo } from 'net';

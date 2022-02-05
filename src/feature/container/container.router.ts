@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  attachListenerToContainer,
   getContainerStatus,
   getListOfContainers,
   getStatsOfContainerByID,
@@ -25,7 +26,7 @@ router.get('/isAlive/:id', getContainerStatus);
 /**
  * Attach listener to container
  */
-router.post('/attach/:id');
+router.post('/attach/:id', attachListenerToContainer);
 
 /**
  * Retrieve logs of specified container
