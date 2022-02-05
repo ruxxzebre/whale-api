@@ -7,7 +7,7 @@ import {
   ContainerStreamTypes,
 } from '@feature/container/container.utils';
 import { addContainer, addLog } from '@feature/container/container.model';
-import { Container } from '@generated/client';
+import { Container } from '@prisma/client';
 
 export const getContainerByID = (id: string): Docker.Container => {
   return docker.getContainer(id);
@@ -31,8 +31,27 @@ export const getContainerStatsByID = (
   throw new Error('Deprecated');
 };
 
-export const checkContainerHealth = () => null; // TODO
-export const getSavedLogs = () => null; // TODO
+type ContainerHealthStatus =
+  | {
+      Status: string;
+      FailingStreak: number;
+      Log: Array<{
+        Start: string;
+        End: string;
+        ExitCode: number;
+        Output: string;
+      }>;
+    }
+  | undefined;
+export const checkContainerHealth = (
+  id: string,
+): Promise<ContainerHealthStatus> => {
+  return getContainerByID(id)
+    .inspect()
+    .then((cinfo) => cinfo.State.Health);
+};
+
+export const getAllLogs = () => null;
 
 export const getContainersList = async (
   filter?: string[],

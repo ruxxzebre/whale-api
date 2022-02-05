@@ -1,4 +1,4 @@
-import { PrismaClient, Container, Logs } from '@generated/client';
+import { PrismaClient, Container, Logs } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -32,6 +32,7 @@ export const addLog = async (
 
 /**
  * TODO
+ * [PRISMA] Make container fields unique
  * Get all logs
  * Get logs of container by id
  * Get container from db

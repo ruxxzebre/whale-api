@@ -16,7 +16,8 @@
     "build": "tsc -p tsconfig.build.json",
     "build:watch": "tsc -w -p tsconfig.build.json",
     "lint": "eslint . --ext .ts,.tsx",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "prisma generate"
   },
   "author": "Dantis Mai <mtd.maithanhdanh@gmail.com>",
   "license": "Apache-2.0",

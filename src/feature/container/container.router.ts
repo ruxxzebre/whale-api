@@ -31,6 +31,8 @@ router.post('/attach/:id', attachListenerToContainer);
 /**
  * Retrieve logs of specified container
  */
-router.get('/logs/:id');
+router.get('/logs', async (_req, res) => {
+  res.json({ check: 'this' });
+});
 
 export default router;
