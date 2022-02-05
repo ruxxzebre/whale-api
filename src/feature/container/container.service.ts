@@ -6,8 +6,9 @@ import {
   attachEventListenerToStream,
   ContainerStreamTypes,
 } from '@feature/container/container.utils';
-import { addContainer, addLog } from '@feature/container/container.model';
+import { addContainer } from '@feature/container/container.model';
 import { Container } from '@prisma/client';
+import { addLog } from '@feature/log/logs.model';
 
 export const getContainerByID = (id: string): Docker.Container => {
   return docker.getContainer(id);
@@ -50,8 +51,6 @@ export const checkContainerHealth = (
     .inspect()
     .then((cinfo) => cinfo.State.Health);
 };
-
-export const getAllLogs = () => null;
 
 export const getContainersList = async (
   filter?: string[],

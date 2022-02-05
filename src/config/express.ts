@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import errorHandler from '@middleware/errorHandler';
 import containerRouter from '@feature/container/container.router';
+import logsRouter from '@feature/log/logs.router';
 
 const createServer = (): express.Application => {
   const app = express();
@@ -22,6 +23,7 @@ const createServer = (): express.Application => {
    * Connect routers
    */
   app.use('/container', containerRouter);
+  app.use('/logs', logsRouter);
 
   return app;
 };

@@ -1,53 +1,32 @@
 import { RequestHandler } from 'express';
-import {
-  attachToContainer,
-  checkContainerHealth,
-  getContainersList,
-  getContainerStatsByID,
-  inspectContainerByID,
-} from '@feature/container/container.service';
+import * as ContainerService from '@feature/container/container.service';
 
-export const getContainerStatus: RequestHandler = async (req, res, next) => {
+export const getContainerStatus: RequestHandler = async (req, res) => {
   const id = req.params.id;
-  try {
-    await inspectContainerByID(id);
-  } catch (e) {
-    return next(e);
-  }
+  await ContainerService.inspectContainerByID(id);
   res.send('OK!');
 };
 
-export const getContainerHealth: RequestHandler = async (req, res, next) => {
+export const getContainerHealth: RequestHandler = async (req, res) => {
   const id = req.params.id;
-  try {
-    res.send(await checkContainerHealth(id));
-  } catch (e) {
-    next(e);
-  }
+  const data = await ContainerService.checkContainerHealth(id);
+  res.send(data);
 };
 
-export const getStatsOfContainerByID: RequestHandler = async (
-  req,
-  res,
-  next,
-) => {
+export const getStatsOfContainerByID: RequestHandler = async (req, res) => {
   const id = req.params.id;
-  try {
-    await getContainerStatsByID(id);
-    res.send('OK!');
-  } catch (e) {
-    next(e);
-  }
+  await ContainerService.getContainerStatsByID(id);
+  res.send('OK!');
 };
 
 export const getListOfContainers: RequestHandler = async (req, res) => {
   const filter = req.query.filter as string[];
-  const list = await getContainersList(filter);
+  const list = await ContainerService.getContainersList(filter);
   res.send(list);
 };
 
 export const attachListenerToContainer: RequestHandler = async (req, res) => {
   const id = req.params.id;
-  const container = await attachToContainer(id);
+  const container = await ContainerService.attachToContainer(id);
   res.send(container);
 };

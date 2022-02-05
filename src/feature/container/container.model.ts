@@ -1,4 +1,4 @@
-import { PrismaClient, Container, Logs } from '@prisma/client';
+import { PrismaClient, Container } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -9,25 +9,27 @@ export const addContainer = async (
   return addedContainer;
 };
 
-export const addLog = async (
-  containerId: string,
-  log: Buffer,
-  error: boolean,
-): Promise<Logs | null> => {
-  const container = await prisma.container.findFirst({
-    where: {
-      internal_id: containerId,
-    },
-  });
-  if (!container) return null;
-  const addedLog = await prisma.logs.create({
-    data: {
-      containerId: container.id,
-      data: log,
-      error,
-    },
-  });
-  return addedLog;
+type GetContainer = {
+  (id: string): Promise<Container | null>;
+  (id: number): Promise<Container | null>;
+};
+export const getContainer: GetContainer = async (id: unknown) => {
+  let container: Container | null = null;
+  if (typeof id === 'string') {
+    container = await prisma.container.findFirst({
+      where: {
+        internal_id: id,
+      },
+    });
+  }
+  if (typeof id === 'number') {
+    container = await prisma.container.findFirst({
+      where: {
+        id,
+      },
+    });
+  }
+  return container;
 };
 
 /**
