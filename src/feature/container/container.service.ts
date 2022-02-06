@@ -6,7 +6,7 @@ import {
   attachEventListenerToStream,
   ContainerStreamTypes,
 } from '@feature/container/container.utils';
-import { addContainer } from '@feature/container/container.model';
+import * as ContainerModel from '@feature/container/container.model';
 import { Container } from '@prisma/client';
 import { addLog } from '@feature/log/logs.model';
 
@@ -84,9 +84,13 @@ export const passStreamsToContainer = async (
   return stream;
 };
 
+export const getSavedContainer = (id): Promise<Container> => {
+  return ContainerModel.getContainer(id);
+};
+
 export const addContainerToStorage = async (id: string): Promise<Container> => {
   const container = await inspectContainerByID(id);
-  return addContainer({
+  return ContainerModel.addContainer({
     name: container.Name,
     internal_id: id,
     internal_pid: container.State.Pid.toString(),

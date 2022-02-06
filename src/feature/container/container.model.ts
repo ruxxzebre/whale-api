@@ -35,9 +35,6 @@ export const getContainer: GetContainer = async (id: unknown) => {
 /**
  * TODO
  * [PRISMA] Make container fields unique
- * Get all logs
- * Get logs of container by id
- * Get container from db
  * Check if container is in db
  * Check is listeners attached to container
  */
