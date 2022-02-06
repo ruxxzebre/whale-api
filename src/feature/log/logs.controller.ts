@@ -1,8 +1,15 @@
 import { RequestHandler } from 'express';
 import * as LogsService from '@feature/log/logs.service';
 
-export const getAllLogs: RequestHandler = async (_req, res) => {
-  const data = await LogsService.getAllLogs();
+export const getAllLogs: RequestHandler = async (req, res) => {
+  const query = req.query;
+  let data;
+
+  if (query.encoding && typeof query.encoding == 'string') {
+    data = await LogsService.getAllLogs(query.encoding);
+  } else {
+    data = await LogsService.getAllLogs();
+  }
   res.send(data);
 };
 

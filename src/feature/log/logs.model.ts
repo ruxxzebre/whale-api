@@ -20,9 +20,12 @@ export const addLog = async (
   return addedLog;
 };
 
-export const retrieveAllLogs = (): Promise<Logs[]> => {
-  return prisma.logs.findMany().then((a) => {
-    return a;
+type EncodedLog = Logs & { data: any };
+export const retrieveAllLogs = (encoding?: string): Promise<EncodedLog[]> => {
+  return prisma.logs.findMany().then((logs: EncodedLog[]) => {
+    if (encoding)
+      logs.forEach((log) => (log.data = log.data.toString(encoding)));
+    return logs;
   });
 };
 
