@@ -1,4 +1,5 @@
 import path from 'path';
+import { getJestPathAliases } from './src/utils/paths';
 const rootDirectory = path.resolve(__dirname);
 
 export default {
@@ -21,11 +22,7 @@ export default {
   },
   moduleDirectories: ['node_modules'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  moduleNameMapper: {
-    '@server(.*)$': `${rootDirectory}/src$1`,
-    '@config(.*)$': `${rootDirectory}/src/config$1`,
-    '@tests(.*)$': `${rootDirectory}/__tests__$1`,
-  },
+  moduleNameMapper: getJestPathAliases(rootDirectory),
   reporters: [
     'default',
     [

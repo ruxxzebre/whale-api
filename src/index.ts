@@ -1,8 +1,4 @@
-import * as moduleAlias from 'module-alias';
-import { getPathAliases } from '@utils/paths';
-const sourcePath = process.env.NODE_ENV === 'development' ? 'src' : 'build';
-moduleAlias.addAliases(getPathAliases(sourcePath));
-
+import '@config/index';
 import { createServer } from '@config/express';
 import { AddressInfo } from 'net';
 import http from 'http';

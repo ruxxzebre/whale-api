@@ -17,3 +17,15 @@ export const getPathAliases = (sourcePath: string): Record<string, string> => {
     return a;
   }, {});
 };
+
+export const getJestPathAliases = (rootDirectory: string) => {
+  if (!tsConfig.compilerOptions.paths) {
+    throw new Error('No paths provided in tsconfig.json');
+  }
+  const { paths } = tsConfig.compilerOptions;
+  return Object.keys(paths).reduce((a, k) => {
+    a[k.replace('/*', '(.*)$')] =
+      rootDirectory + '/' + paths[k][0].replace('/*', '') + '$1';
+    return a;
+  }, {});
+};
