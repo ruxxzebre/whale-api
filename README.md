@@ -8,6 +8,15 @@
 This project is intended to be used with the latest Active LTS release of [Node.js][nodejs].
 ```Also be sure to check REQUIREMENTS.md```
 
+Steps needed for running this project:
+1. ```npm i``` or ```yarn``` (if using yarn, be sure to run ```yarn postinstall```,
+   because yarn has troubles with postinstall hooks)
+2. ```yarn dev``` to run the API
+3. Explore routers in feature/logs and feature/container  
+Try ```localhost:6060/container/list``` to list all containers
+```localhost:6060/container/attach/:id``` to attach log listener to certain container
+```localhost:6060/logs/:id``` to retrieve logs from storage
+
 ## Available Scripts
 
 - `start` - using nodemon to watch changes
