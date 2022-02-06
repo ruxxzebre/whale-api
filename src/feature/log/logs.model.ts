@@ -29,12 +29,12 @@ export const retrieveAllLogs = (encoding?: string): Promise<EncodedLog[]> => {
   });
 };
 
-type GetLogs = {
-  (id: string): Promise<Logs[] | null>;
-  (id: number): Promise<Logs[] | null>;
+export type GetLogs = {
+  (id: string, encoding?: string): Promise<EncodedLog[] | null>;
+  (id: number, encoding?: string): Promise<EncodedLog[] | null>;
 };
-export const getLogsByID: GetLogs = async (id: unknown) => {
-  let logs: Logs[] | null = null;
+export const getLogsByID: GetLogs = async (id: unknown, encoding) => {
+  let logs: EncodedLog[] | null = null;
   if (typeof id === 'string') {
     const container = await getContainer(id);
     if (!container) {
@@ -47,5 +47,7 @@ export const getLogsByID: GetLogs = async (id: unknown) => {
       containerId: id,
     },
   });
+  if (logs && encoding)
+    logs.forEach((log) => (log.data = log.data.toString(encoding)));
   return logs;
 };

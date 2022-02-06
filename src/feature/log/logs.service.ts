@@ -1,10 +1,10 @@
 import * as LogsModel from '@feature/log/logs.model';
+import { GetLogs } from '@feature/log/logs.model';
 
 export const getAllLogs = (
   encoding?: string,
 ): ReturnType<typeof LogsModel.retrieveAllLogs> =>
-  encoding ? LogsModel.retrieveAllLogs(encoding) : LogsModel.retrieveAllLogs();
+  LogsModel.retrieveAllLogs(encoding);
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-export const getLogs = (id: string | number) => LogsModel.getLogsByID(id);
+export const getLogs: GetLogs = (id, encoding) =>
+  LogsModel.getLogsByID(id, encoding);

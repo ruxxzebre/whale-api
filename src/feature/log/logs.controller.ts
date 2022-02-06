@@ -2,20 +2,21 @@ import { RequestHandler } from 'express';
 import * as LogsService from '@feature/log/logs.service';
 
 export const getAllLogs: RequestHandler = async (req, res) => {
-  const query = req.query;
-  let data;
+  const encoding = req.query.encoding;
+  const data =
+    encoding && typeof encoding == 'string'
+      ? await LogsService.getAllLogs(encoding)
+      : await LogsService.getAllLogs();
 
-  if (query.encoding && typeof query.encoding == 'string') {
-    data = await LogsService.getAllLogs(query.encoding);
-  } else {
-    data = await LogsService.getAllLogs();
-  }
   res.send(data);
 };
 
 export const getLogs: RequestHandler = async (req, res) => {
   const id = req.params.id;
-  const data = await LogsService.getLogs(id);
-  console.log(data);
+  const encoding = req.query.encoding;
+  const data =
+    encoding && typeof encoding == 'string'
+      ? await LogsService.getLogs(id, encoding)
+      : await LogsService.getLogs(id);
   res.send(data);
 };
