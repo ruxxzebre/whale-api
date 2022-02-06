@@ -5,6 +5,8 @@ import {
   addContainerStreamsToMap,
   attachEventListenerToStream,
   ContainerStreamTypes,
+  detachEventListenerFromStream,
+  removeContainerFromStreamsMap,
 } from '@feature/container/container.utils';
 import * as ContainerModel from '@feature/container/container.model';
 import { Container } from '@prisma/client';
@@ -123,4 +125,11 @@ export const attachToContainer = async (id: string): Promise<Container> => {
     logChunkErr,
   );
   return saved;
+};
+
+export const detachFromContainer = async (id: string): Promise<null> => {
+  detachEventListenerFromStream(id, ContainerStreamTypes.OUT, 'data');
+  detachEventListenerFromStream(id, ContainerStreamTypes.ERR, 'data');
+  removeContainerFromStreamsMap(id);
+  return null;
 };

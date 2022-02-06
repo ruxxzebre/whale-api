@@ -33,6 +33,12 @@ export const addContainerStreamsToMap = (
   };
 };
 
+export const removeContainerFromStreamsMap = (
+  containerId: ContainerID,
+): void => {
+  delete containersAttachStreamsMap[containerId];
+};
+
 export const getContainerStreams = (
   containerId: ContainerID,
 ): ContainerStreams | null => {

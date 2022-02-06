@@ -32,6 +32,12 @@ export const attachListenerToContainer: RequestHandler = async (req, res) => {
   res.send(container);
 };
 
+export const detachListenerFromContainer: RequestHandler = async (req, res) => {
+  const id = req.params.id;
+  await ContainerService.detachFromContainer(id);
+  res.send('OK!');
+};
+
 export const getContainerBySource: RequestHandler = async (req, res) => {
   const id = req.params.id;
   const source = req.params.source;

@@ -35,6 +35,11 @@ router.post(
   catchAsync(ContainerController.attachListenerToContainer),
 );
 
+router.post(
+  '/detach/:id',
+  catchAsync(ContainerController.detachListenerFromContainer),
+);
+
 /**
  * Get container data based on source (storage or straight from docker)
  */
