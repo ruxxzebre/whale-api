@@ -1,3 +1,1 @@
-import { createDockerInstance } from '@config/docker';
-
-export const docker = createDockerInstance();
+export { docker } from '@config/docker';
