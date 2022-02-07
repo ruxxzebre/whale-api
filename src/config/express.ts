@@ -3,6 +3,7 @@ import cors from 'cors';
 import errorHandler from '@middleware/errorHandler';
 import containerRouter from '@feature/container/container.router';
 import logsRouter from '@feature/log/logs.router';
+import { expressLogger } from '@middleware/expressLogger';
 
 const createServer = (): express.Application => {
   const app = express();
@@ -17,6 +18,7 @@ const createServer = (): express.Application => {
     res.send('UP');
   });
 
+  app.use(expressLogger);
   app.use(errorHandler);
 
   /**
