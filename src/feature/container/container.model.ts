@@ -1,36 +1,44 @@
 import { PrismaClient, Container } from '@prisma/client';
 
+export interface IContainer {
+  name: string;
+  internal_id: string;
+  internal_pid: string;
+}
+
+export interface IContainerModel {
+  addContainer(container: IContainer): Promise<IContainer>;
+  getContainer(id: string): Promise<Container | null>;
+  getContainer(id: number): Promise<Container | null>;
+}
+
 const prisma = new PrismaClient();
 
-export const addContainer = async (
-  container: Omit<Container, 'id' | 'createdAt'>,
-): Promise<Container> => {
-  const addedContainer = await prisma.container.create({ data: container });
-  return addedContainer;
-};
+export class PrismaContainerModel implements IContainerModel {
+  async addContainer(container: IContainer): Promise<Container> {
+    const addedContainer = await prisma.container.create({ data: container });
+    return addedContainer;
+  }
 
-type GetContainer = {
-  (id: string): Promise<Container | null>;
-  (id: number): Promise<Container | null>;
-};
-export const getContainer: GetContainer = async (id: unknown) => {
-  let container: Container | null = null;
-  if (typeof id === 'string') {
-    container = await prisma.container.findFirst({
-      where: {
-        internal_id: id,
-      },
-    });
+  async getContainer(id) {
+    let container: Container | null = null;
+    if (typeof id === 'string') {
+      container = await prisma.container.findFirst({
+        where: {
+          internal_id: id,
+        },
+      });
+    }
+    if (typeof id === 'number') {
+      container = await prisma.container.findFirst({
+        where: {
+          id,
+        },
+      });
+    }
+    return container;
   }
-  if (typeof id === 'number') {
-    container = await prisma.container.findFirst({
-      where: {
-        id,
-      },
-    });
-  }
-  return container;
-};
+}
 
 /**
  * TODO

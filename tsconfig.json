@@ -21,6 +21,7 @@
     "noImplicitThis": false,
     "strictNullChecks": false,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "outDir": "./build",
     "baseUrl": ".",
     "paths": {

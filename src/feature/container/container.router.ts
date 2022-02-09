@@ -1,43 +1,48 @@
 import { Router } from 'express';
-import * as ContainerController from '@feature/container/container.controller';
 import { catchAsync } from '@utils/catchAsync';
+import { ContainerController } from '@feature/container/container.controller';
+import { PrismaContainerModel } from '@feature/container/container.model';
+import { ContainerService } from '@feature/container/container.service';
 
 const router = Router();
+const containerModel = new PrismaContainerModel();
+const containerService = new ContainerService(containerModel);
+const containerController = new ContainerController(containerService);
 
 /**
  * Retrieve list of running containers
  */
-router.get('/list', catchAsync(ContainerController.getListOfContainers));
+router.get('/list', catchAsync(containerController.getListOfContainers));
 
 /**
  * Check stats of specified container
  */
 router.get(
   '/stats/:id',
-  catchAsync(ContainerController.getStatsOfContainerByID),
+  catchAsync(containerController.getStatsOfContainerByID),
 );
 
 /**
  * Check is container is up and running
  */
-router.get('/isAlive/:id', catchAsync(ContainerController.getContainerStatus));
+router.get('/isAlive/:id', catchAsync(containerController.getContainerStatus));
 
 /**
  * Health check
  */
-router.get('/health/:id', catchAsync(ContainerController.getContainerHealth));
+router.get('/health/:id', catchAsync(containerController.getContainerHealth));
 
 /**
  * Attach listener to container
  */
 router.post(
   '/attach/:id',
-  catchAsync(ContainerController.attachListenerToContainer),
+  catchAsync(containerController.attachListenerToContainer),
 );
 
 router.post(
   '/detach/:id',
-  catchAsync(ContainerController.detachListenerFromContainer),
+  catchAsync(containerController.detachListenerFromContainer),
 );
 
 /**
@@ -45,7 +50,7 @@ router.post(
  */
 router.get(
   '/:source/:id',
-  catchAsync(ContainerController.getContainerBySource),
+  catchAsync(containerController.getContainerBySource),
 );
 
 export default router;
