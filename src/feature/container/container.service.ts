@@ -1,5 +1,4 @@
 import Docker, { ContainerInfo } from 'dockerode';
-import { docker } from '@feature/docker/docker.service';
 import Stream, { PassThrough } from 'stream';
 import {
   addContainerStreamsToMap,
@@ -10,8 +9,9 @@ import {
 } from '@feature/container/container.utils';
 import { Container } from '@prisma/client';
 import { addLog } from '@feature/log/logs.model';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { IContainerModel } from '@feature/container/container.model';
+import { DockerService } from '@feature/docker/docker.service';
 
 type ContainerHealthStatus =
   | {
@@ -47,10 +47,15 @@ export interface IContainerService {
 
 @injectable()
 export class ContainerService implements IContainerService {
-  constructor(private containerModel: IContainerModel) {}
+  constructor(
+    @inject('ContainerModel')
+    private containerModel: IContainerModel,
+    @inject('DockerService')
+    private dockerService: DockerService,
+  ) {}
 
   getContainerByID(id: string): Docker.Container {
-    return docker.getContainer(id);
+    return this.dockerService.getContainer(id);
   }
 
   inspectContainerByID(id: string): Promise<Docker.ContainerInspectInfo> {
@@ -67,16 +72,19 @@ export class ContainerService implements IContainerService {
     throw new Error('Deprecated');
   }
 
-  async checkContainerHealth(id: string): Promise<ContainerHealthStatus> {
+  async checkContainerHealth(id: string): Promise<any> {
     return this.getContainerByID(id)
       .inspect()
-      .then((cinfo) => cinfo.State.Health);
+      .then((cinfo) => {
+        return cinfo.State.Status;
+      });
   }
 
   async getContainersList(
     filter?: string[],
   ): Promise<Partial<Docker.ContainerInfo>[]> {
-    const list: Partial<ContainerInfo>[] = await docker.listContainers();
+    const list: Partial<ContainerInfo>[] =
+      await this.dockerService.listContainers();
     if (!filter) return list;
     return list.map((li) =>
       filter.reduce((a, c) => {

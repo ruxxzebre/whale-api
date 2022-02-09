@@ -1,18 +1,23 @@
 import '@config/index';
 import { createServer } from '@config/express';
-import { AddressInfo } from 'net';
-import http from 'http';
 import { logger } from '@config/logger';
+import { checkDockerAvailability } from '@config/docker';
 
 const host = process.env.HOST || '0.0.0.0';
 const port = process.env.PORT || '5000';
 
 async function startServer() {
+  checkDockerAvailability();
   const app = createServer();
-  const server = http.createServer(app).listen({ host, port }, () => {
-    const addressInfo = server.address() as AddressInfo;
+  const server = app.listen({ host, port }, () => {
+    const addressInfo = server.address();
+    logger.info(addressInfo);
+    if (!addressInfo || typeof addressInfo === 'string') {
+      logger.error(`AddressInfo is empty.`);
+      return;
+    }
     logger.info(
-      `Server ready at http://${addressInfo.address}:${addressInfo.port}`,
+      `Server ready at http://${addressInfo?.address}:${addressInfo?.port}`,
     );
   });
 

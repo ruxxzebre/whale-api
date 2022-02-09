@@ -1,5 +1,7 @@
 import { PrismaClient, Logs } from '@prisma/client';
-import { getContainer } from '@feature/container/container.model';
+import { PrismaContainerModel } from '@feature/container/container.model';
+
+const containerModel = new PrismaContainerModel();
 
 const prisma = new PrismaClient();
 
@@ -8,7 +10,7 @@ export const addLog = async (
   log: Buffer,
   error: boolean,
 ): Promise<Logs | null> => {
-  const container = await getContainer(containerId);
+  const container = await containerModel.getContainer(containerId);
   if (!container) return null;
   const addedLog = await prisma.logs.create({
     data: {
@@ -36,7 +38,7 @@ export type GetLogs = {
 export const getLogsByID: GetLogs = async (id: unknown, encoding) => {
   let logs: EncodedLog[] | null = null;
   if (typeof id === 'string') {
-    const container = await getContainer(id);
+    const container = await containerModel.getContainer(id);
     if (!container) {
       return null;
     }

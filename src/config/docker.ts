@@ -4,7 +4,7 @@ import JSON5 from 'json5';
 import { logger } from './logger';
 import * as fs from 'fs';
 
-let dockerOptions: Docker.DockerOptions;
+export let dockerOptions: Docker.DockerOptions;
 try {
   dockerOptions = JSON5.parse(
     fs.readFileSync(path.resolve('.dockerrode.json5'), {
@@ -17,11 +17,11 @@ try {
   process.exit(1);
 }
 
-export let docker: Docker;
-
-try {
-  docker = new Docker(dockerOptions);
-  logger.info('Docker is available...');
-} catch (e) {
-  logger.error(e);
-}
+export const checkDockerAvailability = (): void => {
+  try {
+    new Docker(dockerOptions);
+    logger.info('Docker is available...');
+  } catch (e) {
+    logger.error(e);
+  }
+};

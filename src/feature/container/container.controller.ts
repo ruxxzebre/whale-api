@@ -1,65 +1,70 @@
-// import { RequestHandler } from 'express';
-import { IContainerService } from '@feature/container/container.service';
+import { ContainerService } from '@feature/container/container.service';
 import status from 'http-status';
-// import { inject } from 'inversify';
+import {
+  BaseHttpController,
+  controller,
+  httpGet,
+  httpPost,
+  queryParam,
+} from 'inversify-express-utils';
+import { inject } from 'inversify';
+import { requestParam } from 'inversify-express-utils/lib/decorators';
 
-export class ContainerController {
-  constructor(private containerService: IContainerService) {}
-
-  async getContainerStatus(req, res) {
-    const id = req.params.id;
-    await this.containerService.inspectContainerByID(id);
-    res.send('OK!');
+@controller('/container')
+export class ContainerController extends BaseHttpController {
+  constructor(
+    @inject('ContainerService') private containerService: ContainerService,
+  ) {
+    super();
   }
 
-  async getContainerHealth(req, res) {
-    const id = req.params.id;
-    const data = await this.containerService.checkContainerHealth(id);
-    res.send(data);
+  @httpGet('/list')
+  getListOfContainers(@requestParam('filter') filter: string[]) {
+    return this.containerService.getContainersList(filter);
   }
 
-  async getStatsOfContainerByID(req, res) {
-    const id = req.params.id;
-    await this.containerService.getContainerStatsByID(id);
-    res.send('OK!');
-  }
-
-  async getListOfContainers(req, res) {
-    const filter = req.query.filter as string[];
-    const list = await this.containerService.getContainersList(filter);
-    res.send(list);
-  }
-
-  async attachListenerToContainer(req, res) {
-    const id = req.params.id;
-    const container = await this.containerService.attachToContainer(id);
-    res.send(container);
-  }
-
-  async detachListenerFromContainer(req, res) {
-    const id = req.params.id;
-    await this.containerService.detachFromContainer(id);
-    res.send('OK!');
-  }
-
-  async getContainerBySource(req, res) {
-    const id = req.params.id;
-    const source = req.params.source;
+  @httpGet('/:id/:source?')
+  async getContainerBySource(
+    @requestParam('id') id: string,
+    @queryParam('source') source: 'storage' | 'docker' = 'docker',
+  ) {
     switch (source) {
       case 'storage': {
         const container = await this.containerService.getSavedContainer(id);
-        if (container) return res.send(container);
+        if (container) return container;
         else break;
       }
       case 'docker': {
         const container = await this.containerService
           .inspectContainerByID(id)
           .catch(() => null);
-        if (container) return res.send(container);
+        if (container) return container;
       }
     }
-    return res
-      .status(status.NOT_FOUND)
-      .send(`Container not found in ${source}`);
+
+    return this.json(
+      `Container not found in ${source || 'specified source'}`,
+      status.NOT_FOUND,
+    );
+  }
+
+  @httpGet('/:id/health')
+  getContainerHealth(@requestParam('id') id: string) {
+    return this.containerService.checkContainerHealth(id);
+  }
+
+  @httpGet('/:id/stats')
+  getStatsOfContainerByID(@requestParam('id') id: string) {
+    return this.containerService.getContainerStatsByID(id);
+  }
+
+  @httpPost('/:id/attach')
+  attachListenerToContainer(@requestParam('id') id: string) {
+    return this.containerService.attachToContainer(id);
+  }
+
+  @httpPost('/:id/detach')
+  detachListenerFromContainer(@requestParam('id') id: string) {
+    return this.containerService.detachFromContainer(id);
   }
 }

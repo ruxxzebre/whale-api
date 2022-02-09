@@ -1,4 +1,5 @@
 import { PrismaClient, Container } from '@prisma/client';
+import { injectable } from 'inversify';
 
 export interface IContainer {
   name: string;
@@ -14,6 +15,7 @@ export interface IContainerModel {
 
 const prisma = new PrismaClient();
 
+@injectable()
 export class PrismaContainerModel implements IContainerModel {
   async addContainer(container: IContainer): Promise<Container> {
     const addedContainer = await prisma.container.create({ data: container });
