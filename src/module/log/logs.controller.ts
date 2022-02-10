@@ -1,4 +1,4 @@
-import { LogsService } from '@feature/log/logs.service';
+import { LogsService } from '@server/module/log/logs.service';
 import {
   BaseHttpController,
   controller,

@@ -6,12 +6,12 @@ import {
   ContainerStreamTypes,
   detachEventListenerFromStream,
   removeContainerFromStreamsMap,
-} from '@feature/container/container.utils';
+} from '@server/module/container/container.utils';
 import { Container } from '@prisma/client';
-import { addLog } from '@feature/log/logs.model';
+import { addLog } from '@server/module/log/logs.model';
 import { inject, injectable } from 'inversify';
-import { IContainerModel } from '@feature/container/container.model';
-import { DockerService } from '@feature/docker/docker.service';
+import { IContainerModel } from '@server/module/container/container.model';
+import { DockerService } from '@server/module/docker/docker.service';
 
 type ContainerHealthStatus =
   | {

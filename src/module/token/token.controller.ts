@@ -6,7 +6,7 @@ import {
   requestBody,
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { TokenService } from '@feature/token/token.service';
+import { TokenService } from '@server/module/token/token.service';
 import { requestParam } from 'inversify-express-utils/lib/decorators';
 
 @controller('/token')

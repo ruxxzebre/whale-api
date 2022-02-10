@@ -10,17 +10,17 @@ import { buildProviderModule } from 'inversify-binding-decorators';
 import {
   ContainerService,
   IContainerService,
-} from '@feature/container/container.service';
+} from './/container/container.service';
 import {
   IContainerModel,
   PrismaContainerModel,
-} from '@feature/container/container.model';
+} from './/container/container.model';
 import { ILogsService, LogsService } from './log/logs.service';
-import { DockerService } from '@feature/docker/docker.service';
-import { TokenService } from '@feature/token/token.service';
+import { DockerService } from './docker/docker.service';
+import { TokenService } from './token/token.service';
 
 import './container/container.controller';
-import './logs/logs.controller';
+import './log/logs.controller';
 import './token/token.controller';
 
 // import {

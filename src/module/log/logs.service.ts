@@ -1,5 +1,5 @@
-import * as LogsModel from '@feature/log/logs.model';
-import { EncodedLog } from '@feature/log/logs.model';
+import * as LogsModel from '@server/module/log/logs.model';
+import { EncodedLog } from '@server/module/log/logs.model';
 import { injectable } from 'inversify';
 
 export interface ILogsService {

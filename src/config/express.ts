@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import errorHandler from '@middleware/errorHandler';
 import { expressLogger } from '@middleware/expressLogger';
-import { createContainer } from '@feature/ioc';
+import { createContainer } from '@module/ioc';
 import { InversifyExpressServer } from 'inversify-express-utils';
 
 const createServer = (): express.Application => {

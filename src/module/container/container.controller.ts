@@ -1,4 +1,4 @@
-import { ContainerService } from '@feature/container/container.service';
+import { ContainerService } from '@server/module/container/container.service';
 import status from 'http-status';
 import 'reflect-metadata';
 import {

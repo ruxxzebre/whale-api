@@ -26,7 +26,7 @@
     "baseUrl": ".",
     "paths": {
       "@utils/*": ["src/utils/*"],
-      "@feature/*": ["src/feature/*"],
+      "@module/*": ["src/module/*"],
       "@middleware/*": ["src/middleware/*"],
       "@server/*": ["src/*"],
       "@tests/*": ["__tests__/*"],

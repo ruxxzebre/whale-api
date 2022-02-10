@@ -1,5 +1,5 @@
 import { Logs, PrismaClient } from '@prisma/client';
-import { PrismaContainerModel } from '@feature/container/container.model';
+import { PrismaContainerModel } from '@server/module/container/container.model';
 
 const containerModel = new PrismaContainerModel();
 
