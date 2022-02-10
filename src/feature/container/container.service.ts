@@ -43,6 +43,7 @@ export interface IContainerService {
   addContainerToStorage(id: string): Promise<Container>;
   detachFromContainer(id: string): Promise<null>;
   attachToContainer(id: string): Promise<Container>;
+  removeContainerByID(id: string): Promise<Container>;
 }
 
 @injectable()
@@ -56,6 +57,10 @@ export class ContainerService implements IContainerService {
 
   getContainerByID(id: string): Docker.Container {
     return this.dockerService.getContainer(id);
+  }
+
+  removeContainerByID(id: string): Promise<any> {
+    return this.containerModel.removeContainer(id);
   }
 
   inspectContainerByID(id: string): Promise<Docker.ContainerInspectInfo> {

@@ -1,4 +1,4 @@
-import { PrismaClient, Container } from '@prisma/client';
+import { Container, PrismaClient } from '@prisma/client';
 import { injectable } from 'inversify';
 
 export interface IContainer {
@@ -11,6 +11,8 @@ export interface IContainerModel {
   addContainer(container: IContainer): Promise<IContainer>;
   getContainer(id: string): Promise<Container | null>;
   getContainer(id: number): Promise<Container | null>;
+  removeContainer(id: string): Promise<Container | null>;
+  removeContainer(id: number): Promise<Container | null>;
 }
 
 const prisma = new PrismaClient();
@@ -22,7 +24,31 @@ export class PrismaContainerModel implements IContainerModel {
     return addedContainer;
   }
 
-  async getContainer(id) {
+  async removeContainer(id: string | number): Promise<Container> {
+    let container: Container | null = null;
+    if (typeof id === 'string') {
+      const tempContainer = await prisma.container.findFirst({
+        where: {
+          internal_id: id,
+        },
+      });
+      container = await prisma.container.delete({
+        where: {
+          id: tempContainer.id,
+        },
+      });
+    }
+    if (typeof id === 'number') {
+      container = await prisma.container.delete({
+        where: {
+          id,
+        },
+      });
+    }
+    return container;
+  }
+
+  async getContainer(id: string | number): Promise<Container> {
     let container: Container | null = null;
     if (typeof id === 'string') {
       container = await prisma.container.findFirst({

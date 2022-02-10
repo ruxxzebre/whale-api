@@ -1,8 +1,10 @@
 import { ContainerService } from '@feature/container/container.service';
 import status from 'http-status';
+import 'reflect-metadata';
 import {
   BaseHttpController,
   controller,
+  httpDelete,
   httpGet,
   httpPost,
   queryParam,
@@ -46,6 +48,11 @@ export class ContainerController extends BaseHttpController {
       `Container not found in ${source || 'specified source'}`,
       status.NOT_FOUND,
     );
+  }
+
+  @httpDelete('/:id')
+  removeContainer(@requestParam('id') id: string) {
+    return this.containerService.removeContainerByID(id);
   }
 
   @httpGet('/:id/health')

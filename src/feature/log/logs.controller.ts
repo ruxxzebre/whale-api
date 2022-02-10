@@ -1,22 +1,33 @@
-import { RequestHandler } from 'express';
-import * as LogsService from '@feature/log/logs.service';
+import { LogsService } from '@feature/log/logs.service';
+import {
+  BaseHttpController,
+  controller,
+  httpGet,
+  queryParam,
+} from 'inversify-express-utils';
+import { requestParam } from 'inversify-express-utils/lib/decorators';
+import { inject } from 'inversify';
 
-export const getAllLogs: RequestHandler = async (req, res) => {
-  const encoding = req.query.encoding;
-  const data =
-    encoding && typeof encoding == 'string'
-      ? await LogsService.getAllLogs(encoding)
-      : await LogsService.getAllLogs();
+@controller('logs')
+export class LogsController extends BaseHttpController {
+  constructor(@inject('LogsService') private logsService: LogsService) {
+    super();
+  }
 
-  res.send(data);
-};
+  @httpGet('/')
+  async getAllLogs(@queryParam('encoding') encoding: string) {
+    return encoding && typeof encoding == 'string'
+      ? await this.logsService.getAllLogs(encoding)
+      : await this.logsService.getAllLogs();
+  }
 
-export const getLogs: RequestHandler = async (req, res) => {
-  const id = req.params.id;
-  const encoding = req.query.encoding;
-  const data =
-    encoding && typeof encoding == 'string'
-      ? await LogsService.getLogs(id, encoding)
-      : await LogsService.getLogs(id);
-  res.send(data);
-};
+  @httpGet('/:id')
+  async getLogs(
+    @requestParam('id') id: string,
+    @queryParam('encoding') encoding: string,
+  ) {
+    return encoding && typeof encoding == 'string'
+      ? await this.logsService.getLogs(id, encoding)
+      : await this.logsService.getLogs(id);
+  }
+}

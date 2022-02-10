@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import errorHandler from '@middleware/errorHandler';
-import logsRouter from '@feature/log/logs.router';
 import { expressLogger } from '@middleware/expressLogger';
 import { createContainer } from '@feature/ioc';
 import { InversifyExpressServer } from 'inversify-express-utils';
@@ -22,12 +21,6 @@ const createServer = (): express.Application => {
 
     app.use(expressLogger);
     app.use(errorHandler);
-
-    /**
-     * Connect routers
-     */
-    // app.use('/container', containerRouter);
-    app.use('/logs', logsRouter);
   });
 
   return server.build();

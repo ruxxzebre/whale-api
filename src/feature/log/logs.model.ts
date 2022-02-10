@@ -1,4 +1,4 @@
-import { PrismaClient, Logs } from '@prisma/client';
+import { Logs, PrismaClient } from '@prisma/client';
 import { PrismaContainerModel } from '@feature/container/container.model';
 
 const containerModel = new PrismaContainerModel();
@@ -22,7 +22,7 @@ export const addLog = async (
   return addedLog;
 };
 
-type EncodedLog = Logs & { data: any };
+export type EncodedLog = Logs & { data: any };
 export const retrieveAllLogs = (encoding?: string): Promise<EncodedLog[]> => {
   return prisma.logs.findMany().then((logs: EncodedLog[]) => {
     if (encoding)
@@ -35,7 +35,7 @@ export type GetLogs = {
   (id: string, encoding?: string): Promise<EncodedLog[] | null>;
   (id: number, encoding?: string): Promise<EncodedLog[] | null>;
 };
-export const getLogsByID: GetLogs = async (id: unknown, encoding) => {
+export const getLogsByID: GetLogs = async (id, encoding) => {
   let logs: EncodedLog[] | null = null;
   if (typeof id === 'string') {
     const container = await containerModel.getContainer(id);
