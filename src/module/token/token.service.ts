@@ -5,17 +5,17 @@ import { injectable } from 'inversify';
 export class TokenService {
   private tokenStorage = {};
 
-  setToken(configuration: unknown) {
+  setToken(configuration: unknown): unknown {
     const token = uuid();
     this.tokenStorage[token] = configuration;
     return configuration;
   }
 
-  getToken(token: string) {
+  getToken(token: string): unknown | null {
     return this.tokenStorage[token] || null;
   }
 
-  removeToken(token: string) {
+  removeToken(token: string): unknown | null {
     const configuration = this.tokenStorage[token];
     if (!configuration) return null;
     delete this.tokenStorage[token];
