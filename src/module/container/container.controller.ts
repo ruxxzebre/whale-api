@@ -21,7 +21,7 @@ export class ContainerController extends BaseHttpController {
   }
 
   @httpGet('/list')
-  getListOfContainers(@requestParam('filter') filter: string[]) {
+  getListOfContainers(@requestParam('filter') filter?: string[]) {
     return this.containerService.getContainersList(filter);
   }
 

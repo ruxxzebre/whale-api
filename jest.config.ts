@@ -1,5 +1,6 @@
 import path from 'path';
 import { getJestPathAliases } from './src/utils/paths';
+
 const rootDirectory = path.resolve(__dirname);
 
 export default {

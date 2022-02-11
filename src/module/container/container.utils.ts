@@ -21,11 +21,6 @@ export const addContainerStreamsToMap = (
   errStream: Stream.PassThrough,
   attachStream: NodeJS.ReadWriteStream,
 ): void => {
-  console.log(
-    outStream.constructor.name,
-    errStream.constructor.name,
-    attachStream.constructor.name,
-  );
   containersAttachStreamsMap[containerId] = {
     [ContainerStreamTypes.OUT]: outStream,
     [ContainerStreamTypes.ERR]: errStream,

@@ -47,11 +47,10 @@ export interface IContainerService {
 }
 
 @injectable()
-export class ContainerService implements IContainerService {
+export class ContainerServiceFactory implements IContainerService {
   constructor(
     @inject('ContainerModel')
     private containerModel: IContainerModel,
-    @inject('DockerService')
     private dockerService: DockerService,
   ) {}
 
@@ -170,5 +169,16 @@ export class ContainerService implements IContainerService {
     detachEventListenerFromStream(id, ContainerStreamTypes.ERR, 'data');
     removeContainerFromStreamsMap(id);
     return null;
+  }
+}
+
+/* TODO: move to ioc.ts */
+@injectable()
+export class ContainerService extends ContainerServiceFactory {
+  constructor(
+    @inject('ContainerModel') containerModel: IContainerModel,
+    @inject('DockerService') dockerService: DockerService,
+  ) {
+    super(containerModel, dockerService);
   }
 }

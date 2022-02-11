@@ -7,3 +7,7 @@ export class DockerService extends Docker {
     super(dockerOptions);
   }
 }
+
+export interface IDockerConstructor {
+  new (opts: Docker.DockerOptions): DockerService;
+}
