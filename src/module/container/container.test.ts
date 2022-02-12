@@ -1,24 +1,51 @@
 import { ContainerController } from './container.controller';
 import { ContainerService } from '@module/container/container.service';
-import { DockerService } from '@module/docker/docker.service';
 import { dockerOptions } from '@config/dockerConfig';
 import Joi from 'joi';
-import { createContainer } from '@module/ioc';
 import {
   Context,
   createMockContext,
   MockContext,
 } from '@config/prisma/context';
-import {
-  IContainer,
-  IContainerModel,
-  PrismaContainerModel,
-} from '@module/container/container.model';
+import { IContainer, IContainerModel } from '@module/container/container.model';
 import { Container } from '@prisma/client';
+import Docker from 'dockerode';
 
 jest.useFakeTimers();
 
-const iocContainer = createContainer();
+// const iocContainer = createContainer();
+
+class ContainerModelMock implements IContainerModel {
+  private storage: Container[] = [];
+  private highestIndex = 0;
+  async addContainer(container: IContainer): Promise<IContainer> {
+    this.highestIndex = this.storage.length + 1;
+    this.storage.push({
+      ...container,
+      id: this.highestIndex,
+      createdAt: new Date(),
+    });
+    return container;
+  }
+  async getContainer(id: unknown): Promise<Container | null> {
+    if (!['string', 'number'].includes(typeof id)) return null;
+    if (typeof id === 'string')
+      return this.storage.find((c) => c.internal_id === id) || null;
+    if (typeof id === 'number')
+      return this.storage.find((c) => c.id === id) || null;
+    return null;
+  }
+  async removeContainer(id: unknown): Promise<Container | null> {
+    if (!['string', 'number'].includes(typeof id)) return null;
+    const container = await this.getContainer(id);
+    if (!container) return null;
+    if (typeof id === 'string')
+      this.storage = this.storage.filter((c) => c.internal_id !== id) || null;
+    if (typeof id === 'number')
+      this.storage = this.storage.filter((c) => c.id !== id) || null;
+    return container;
+  }
+}
 
 describe('Container Suite', () => {
   it('Should pass', () => {
@@ -41,19 +68,25 @@ describe('Container Suite', () => {
     let ContainerModel: IContainerModel;
 
     beforeEach(() => {
-      ContainerModel = new PrismaContainerModel(ctx.prisma);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      ContainerModel = new ContainerModelMock();
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      ContainerModel.prisma = ctx.prisma;
     });
 
-    it('Container should be found in database', () => {
+    it('Container should be found in database', async () => {
       const c: IContainer = {
         name: 'Ballistic flex',
         internal_id: 'a',
         internal_pid: 'b',
       };
-      mockCtx.prisma.container.create.mockResolvedValue(c as Container);
-      ContainerModel.getContainer('a').then((data) => {
-        expect(containerSchema.validate(data).error).toBeFalsy();
-      });
+      // await mockCtx.prisma.container.create.mockResolvedValue(c as Container);
+      await ContainerModel.addContainer(c);
+      const data = await ContainerModel.getContainer('a');
+      expect(data).toBeTruthy();
+      expect(containerSchema.validate(data).error);
     });
   });
   describe('Container Controller', () => {
@@ -74,37 +107,29 @@ describe('Container Suite', () => {
     beforeEach(() => {
       controller = new ContainerController(
         new ContainerService(
-          iocContainer.get('ContainerModel'),
-          new DockerService(dockerOptions),
+          new ContainerModelMock(),
+          new Docker(dockerOptions),
         ),
       );
     });
 
-    it('Should return list of containers', (done) => {
-      controller
-        .getListOfContainers()
-        .then((containers) => {
-          expect(Array.isArray(containers)).toBeTruthy();
-        })
-        .catch((e) => done(e));
+    it('Should return list of containers', async () => {
+      const list = await controller.getListOfContainers();
+      console.log(list);
+      expect(Array.isArray(list)).toBeTruthy();
     });
 
-    it('Should return list of containers with provided filter with existing keys', async (done) => {
-      controller
-        .getListOfContainers(existingFilterKeys)
-        .then((containers) => {
-          expect(filterSchema.validate(containers).error).toBeFalsy();
-        })
-        .catch((e) => done(e));
+    it('Should return list of containers with provided filter with existing keys', async () => {
+      const list = await controller.getListOfContainers(existingFilterKeys);
+      if (list.length) expect(filterSchema.validate(list).error).toBeFalsy();
+      return true;
     });
 
-    it('Should return list of empty objects due to provided filter with non existing keys', (done) => {
-      controller
-        .getListOfContainers(nonExistingFilterKeys)
-        .then((containers) => {
-          expect(containers.filter((c) => !!Object.keys(c)).length).toBe(0);
-        })
-        .catch((e) => done(e));
+    it('Should return list of empty objects due to provided filter with non existing keys', async () => {
+      const list = await controller.getListOfContainers(nonExistingFilterKeys);
+      if (list.length)
+        expect(list.filter((c) => !!Object.keys(c)).length).toBe(list.length);
+      return true;
     });
   });
   // describe('Container Service', () => {});
