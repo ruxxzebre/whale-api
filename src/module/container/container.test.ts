@@ -1,7 +1,7 @@
 import { ContainerController } from './container.controller';
 import { ContainerService } from '@module/container/container.service';
 import { DockerService } from '@module/docker/docker.service';
-import { dockerOptions } from '@config/docker';
+import { dockerOptions } from '@config/dockerConfig';
 import Joi from 'joi';
 import { createContainer } from '@module/ioc';
 import {
@@ -15,6 +15,8 @@ import {
   PrismaContainerModel,
 } from '@module/container/container.model';
 import { Container } from '@prisma/client';
+
+jest.useFakeTimers();
 
 const iocContainer = createContainer();
 
@@ -50,7 +52,7 @@ describe('Container Suite', () => {
       };
       mockCtx.prisma.container.create.mockResolvedValue(c as Container);
       ContainerModel.getContainer('a').then((data) => {
-        expect(data).toMatchSchema(containerSchema);
+        expect(containerSchema.validate(data).error).toBeFalsy();
       });
     });
   });
@@ -60,15 +62,13 @@ describe('Container Suite', () => {
       'bark bark bark',
       'let me inject some service',
     ];
-    const containerArrayWithExistingFilterKeysSchema = Joi.array().items(
+    const filterSchema = Joi.array().items(
       Joi.object({
-        ...existingFilterKeys.reduce((a, c) => {
-          a[c] = Joi.string();
-          return a;
-        }, {}),
+        Id: Joi.string(),
+        Image: Joi.string(),
+        ImageID: Joi.string(),
       }),
     );
-
     let controller: ContainerController;
 
     beforeEach(() => {
@@ -80,33 +80,38 @@ describe('Container Suite', () => {
       );
     });
 
-    it('Should return list of containers with empty filter', () => {
-      controller.getListOfContainers().then((containers) => {
-        expect(Array.isArray(containers)).toBeTruthy();
-      });
+    it('Should return list of containers', (done) => {
+      controller
+        .getListOfContainers()
+        .then((containers) => {
+          expect(Array.isArray(containers)).toBeTruthy();
+        })
+        .catch((e) => done(e));
     });
 
-    it('Should return list of containers with provided filter with existing keys', () => {
-      controller.getListOfContainers(existingFilterKeys).then((containers) => {
-        expect(containers).toMatchSchema(
-          containerArrayWithExistingFilterKeysSchema,
-        );
-      });
+    it('Should return list of containers with provided filter with existing keys', async (done) => {
+      controller
+        .getListOfContainers(existingFilterKeys)
+        .then((containers) => {
+          expect(filterSchema.validate(containers).error).toBeFalsy();
+        })
+        .catch((e) => done(e));
     });
 
-    it('Should return list of empty objects due to provided filter with non existing keys', () => {
+    it('Should return list of empty objects due to provided filter with non existing keys', (done) => {
       controller
         .getListOfContainers(nonExistingFilterKeys)
         .then((containers) => {
           expect(containers.filter((c) => !!Object.keys(c)).length).toBe(0);
-        });
+        })
+        .catch((e) => done(e));
     });
   });
   // describe('Container Service', () => {});
   /* describe('Container Utilities', () => {
-    it('Should add streams to a map', () => {
+      it('Should add streams to a map', () => {
 
+      });
     });
-  });
-   */
+     */
 });

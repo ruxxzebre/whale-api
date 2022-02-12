@@ -5,7 +5,7 @@ import {
 } from 'inversify';
 import Docker from 'dockerode';
 import 'reflect-metadata';
-import { dockerOptions } from '@config/docker';
+import { dockerOptions } from '@config/dockerConfig';
 import { buildProviderModule } from 'inversify-binding-decorators';
 import {
   ContainerService,

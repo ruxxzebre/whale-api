@@ -21,6 +21,10 @@ export default {
       tsconfig: path.resolve(__dirname, 'tsconfig.json'),
     },
   },
+  modulePathIgnorePatterns: [
+    `${rootDirectory}/src/config/dockerConfig.ts`,
+    `${rootDirectory}/src/index.ts`,
+  ],
   moduleDirectories: ['node_modules'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: getJestPathAliases(rootDirectory),

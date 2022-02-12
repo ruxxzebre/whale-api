@@ -1,7 +1,7 @@
 import '@config/index';
 import { createServer } from '@config/express';
 import { logger } from '@config/logger';
-import { checkDockerAvailability } from '@config/docker';
+import { checkDockerAvailability } from '@config/dockerConfig';
 
 const host = process.env.HOST || '0.0.0.0';
 const port = process.env.PORT || '5000';

@@ -1,7 +1,7 @@
 import 'reflect-metadata';
-import { matchers } from 'jest-joi';
-
-expect.extend(matchers);
+// import { matchers } from 'jest-joi';
+//
+// expect.extend(matchers);
 
 process.env = {
   ...process.env,

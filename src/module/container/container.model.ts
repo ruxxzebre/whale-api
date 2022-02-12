@@ -49,6 +49,7 @@ export class PrismaContainerModel implements IContainerModel {
   }
 
   async getContainer(id: unknown): Promise<Container> {
+    console.log(id);
     let container: Container | null = null;
     if (typeof id === 'string') {
       container = await this.prisma.container.findFirst({
