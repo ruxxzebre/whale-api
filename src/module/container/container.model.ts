@@ -1,5 +1,5 @@
 import { Container, PrismaClient } from '@prisma/client';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 
 export interface IContainer {
   name: string;
@@ -15,55 +15,56 @@ export interface IContainerModel {
   removeContainer(id: number): Promise<Container | null>;
 }
 
-const prisma = new PrismaClient();
-
 @injectable()
 export class PrismaContainerModel implements IContainerModel {
-  async addContainer(container: IContainer): Promise<Container> {
-    const addedContainer = await prisma.container.create({ data: container });
-    return addedContainer;
+  constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
+
+  addContainer(container: IContainer): Promise<Container> {
+    return this.prisma.container.create({ data: container });
   }
 
-  async removeContainer(id: string | number): Promise<Container> {
+  async removeContainer(id: unknown): Promise<Container> {
     let container: Container | null = null;
     if (typeof id === 'string') {
-      const tempContainer = await prisma.container.findFirst({
+      const tempContainer = await this.prisma.container.findFirst({
         where: {
           internal_id: id,
         },
       });
-      container = await prisma.container.delete({
+      container = await this.prisma.container.delete({
         where: {
-          id: tempContainer.id,
+          id: tempContainer?.id,
         },
       });
-    }
-    if (typeof id === 'number') {
-      container = await prisma.container.delete({
+    } else if (typeof id === 'number') {
+      container = await this.prisma.container.delete({
         where: {
           id,
         },
       });
     }
+    if (!container) throw new Error('Container not found in DB.');
+
     return container;
   }
 
-  async getContainer(id: string | number): Promise<Container> {
+  async getContainer(id: unknown): Promise<Container> {
     let container: Container | null = null;
     if (typeof id === 'string') {
-      container = await prisma.container.findFirst({
+      container = await this.prisma.container.findFirst({
         where: {
           internal_id: id,
         },
       });
     }
     if (typeof id === 'number') {
-      container = await prisma.container.findFirst({
+      container = await this.prisma.container.findFirst({
         where: {
           id,
         },
       });
     }
+    if (!container) throw new Error('Container not found in DB.');
     return container;
   }
 }

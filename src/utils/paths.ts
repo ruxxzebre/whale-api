@@ -8,7 +8,7 @@ export const getPathAliases = (sourcePath: string): Record<string, string> => {
   if (!tsConfig.compilerOptions.paths) {
     throw new Error('No paths provided in tsconfig.json');
   }
-  const { paths } = tsConfig.compilerOptions;
+  const { paths } = tsConfig.compilerOptions as any;
   delete paths['@tests/*'];
   return Object.keys(paths).reduce((a, k) => {
     a[k.split('/')[0]] = paths[k][0]

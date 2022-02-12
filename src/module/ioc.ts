@@ -2,7 +2,6 @@ import {
   Container as InversifyContainer,
   decorate,
   injectable,
-  interfaces,
 } from 'inversify';
 import Docker from 'dockerode';
 import 'reflect-metadata';
@@ -23,8 +22,9 @@ import { TokenService } from './token/token.service';
 import './container/container.controller';
 import './log/logs.controller';
 import './token/token.controller';
-import { Context } from 'inversify/lib/planning/context';
-import Factory = interfaces.Factory;
+import { PrismaClient } from '@prisma/client';
+// import { Context } from 'inversify/lib/planning/context';
+// import Factory = interfaces.Factory;
 
 // import {
 //   // interfaces,
@@ -37,7 +37,13 @@ import Factory = interfaces.Factory;
  */
 export const createContainer = (): InversifyContainer => {
   const container = new InversifyContainer();
+
+  decorate(injectable(), PrismaClient);
   decorate(injectable(), Docker);
+
+  container
+    .bind<PrismaClient>('PrismaClient')
+    .toDynamicValue(() => new PrismaClient());
   container.bind<IContainerModel>('ContainerModel').to(PrismaContainerModel);
   container.bind<ILogsService>('LogsService').to(LogsService);
   container.bind<TokenService>('TokenService').to(TokenService);
@@ -52,16 +58,16 @@ export const createContainer = (): InversifyContainer => {
   container
     .bind<IDockerConstructor>('IDockerConstructor')
     .toConstructor(DockerService);
-  container
-    .bind<Factory<DockerService>>('Factory<DockerService>')
-    .toFactory<DockerService>((context: Context) => {
-      return (config: Docker.DockerOptions) => {
-        const DockerClass = context.container.get<IDockerConstructor>(
-          'DockerServiceConstructor',
-        );
-        return new DockerClass(config);
-      };
-    });
+  // container
+  //   .bind<Factory<DockerService>>('Factory<DockerService>')
+  //   .toFactory<DockerService>((context: Context) => {
+  //     return (config: Docker.DockerOptions) => {
+  //       const DockerClass = context.container.get<IDockerConstructor>(
+  //         'DockerServiceConstructor',
+  //       );
+  //       return new DockerClass(config);
+  //     };
+  //   });
 
   return container;
 };

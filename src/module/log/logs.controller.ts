@@ -16,7 +16,7 @@ export class LogsController extends BaseHttpController {
 
   @httpGet('/')
   async getAllLogs(@queryParam('encoding') encoding: string) {
-    return encoding && typeof encoding == 'string'
+    return encoding
       ? await this.logsService.getAllLogs(encoding)
       : await this.logsService.getAllLogs();
   }
@@ -26,7 +26,7 @@ export class LogsController extends BaseHttpController {
     @requestParam('id') id: string,
     @queryParam('encoding') encoding: string,
   ) {
-    return encoding && typeof encoding == 'string'
+    return encoding
       ? await this.logsService.getLogs(id, encoding)
       : await this.logsService.getLogs(id);
   }

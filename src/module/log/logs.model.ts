@@ -1,9 +1,8 @@
-import { Logs, PrismaClient } from '@prisma/client';
+import { Logs } from '@prisma/client';
 import { PrismaContainerModel } from '@server/module/container/container.model';
+import prisma from '@config/prisma';
 
-const containerModel = new PrismaContainerModel();
-
-const prisma = new PrismaClient();
+const containerModel = new PrismaContainerModel(prisma);
 
 export const addLog = async (
   containerId: string,

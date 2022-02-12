@@ -19,7 +19,7 @@
     "noImplicitAny": false,
     "resolveJsonModule": true,
     "noImplicitThis": false,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "outDir": "./build",

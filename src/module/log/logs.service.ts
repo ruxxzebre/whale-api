@@ -10,11 +10,11 @@ export interface ILogsService {
 
 @injectable()
 export class LogsService implements ILogsService {
-  getAllLogs(encoding = undefined) {
+  getAllLogs(encoding?) {
     return LogsModel.retrieveAllLogs(encoding);
   }
 
-  getLogs(id, encoding = undefined) {
+  getLogs(id, encoding?) {
     return LogsModel.getLogsByID(id, encoding);
   }
 }

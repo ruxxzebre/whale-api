@@ -39,7 +39,7 @@ export interface IContainerService {
     stdOutStream: PassThrough,
     stdErrStream: PassThrough,
   ): Promise<NodeJS.ReadWriteStream>;
-  getSavedContainer(id): Promise<Container>;
+  getSavedContainer(id): Promise<Container | null>;
   addContainerToStorage(id: string): Promise<Container>;
   detachFromContainer(id: string): Promise<null>;
   attachToContainer(id: string): Promise<Container>;
@@ -117,7 +117,7 @@ export class ContainerServiceFactory implements IContainerService {
     return stream;
   }
 
-  async getSavedContainer(id): Promise<Container> {
+  async getSavedContainer(id): Promise<Container | null> {
     return this.containerModel.getContainer(id);
   }
 
