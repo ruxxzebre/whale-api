@@ -72,6 +72,5 @@ export class PrismaContainerModel implements IContainerModel {
 /**
  * TODO
  * [PRISMA] Make container fields unique
- * Check if container is in db
  * Check is listeners attached to container
  */
