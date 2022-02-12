@@ -1,17 +1,21 @@
 import Docker, { ContainerInfo } from 'dockerode';
 import Stream, { PassThrough } from 'stream';
-import {
-  addContainerStreamsToMap,
-  attachEventListenerToStream,
-  ContainerStreamTypes,
-  detachEventListenerFromStream,
-  removeContainerFromStreamsMap,
-} from '@server/module/container/container.utils';
+// import {
+//   addContainerStreamsToMap,
+//   attachEventListenerToStream,
+//   ContainerStreamTypes,
+//   detachEventListenerFromStream, DockerStreamStorage,
+//   removeContainerFromStreamsMap,
+// } from '@server/module/container/container.utils';
 import { Container } from '@prisma/client';
 import { addLog } from '@server/module/log/logs.model';
 import { inject, injectable } from 'inversify';
 import { IContainerModel } from '@server/module/container/container.model';
 import { DockerService } from '@server/module/docker/docker.service';
+import {
+  ContainerStreamTypes,
+  DockerStreamStorage,
+} from '@module/streamStorage';
 
 type ContainerHealthStatus =
   | {
@@ -51,6 +55,7 @@ export class ContainerServiceFactory implements IContainerService {
   constructor(
     @inject('ContainerModel')
     private containerModel: IContainerModel,
+    private dockerStreamStorage: DockerStreamStorage,
     private dockerService: DockerService,
   ) {}
 
@@ -148,14 +153,19 @@ export class ContainerServiceFactory implements IContainerService {
       stdOutStream,
       stdErrStream,
     );
-    addContainerStreamsToMap(id, stdOutStream, stdErrStream, stream);
-    attachEventListenerToStream(
+    this.dockerStreamStorage.addContainerStreamsToMap(
+      id,
+      stdOutStream,
+      stdErrStream,
+      stream,
+    );
+    this.dockerStreamStorage.attachEventListenerToStream(
       id,
       ContainerStreamTypes.OUT,
       'data',
       logChunkOut,
     );
-    attachEventListenerToStream(
+    this.dockerStreamStorage.attachEventListenerToStream(
       id,
       ContainerStreamTypes.ERR,
       'data',
@@ -165,9 +175,17 @@ export class ContainerServiceFactory implements IContainerService {
   }
 
   async detachFromContainer(id: string): Promise<null> {
-    detachEventListenerFromStream(id, ContainerStreamTypes.OUT, 'data');
-    detachEventListenerFromStream(id, ContainerStreamTypes.ERR, 'data');
-    removeContainerFromStreamsMap(id);
+    this.dockerStreamStorage.detachEventListenerFromStream(
+      id,
+      ContainerStreamTypes.OUT,
+      'data',
+    );
+    this.dockerStreamStorage.detachEventListenerFromStream(
+      id,
+      ContainerStreamTypes.ERR,
+      'data',
+    );
+    this.dockerStreamStorage.removeContainerFromStreamsMap(id);
     return null;
   }
 }
@@ -177,8 +195,9 @@ export class ContainerServiceFactory implements IContainerService {
 export class ContainerService extends ContainerServiceFactory {
   constructor(
     @inject('ContainerModel') containerModel: IContainerModel,
+    @inject('DockerStreamStorage') dockerStreamStorage: DockerStreamStorage,
     @inject('DockerService') dockerService: DockerService,
   ) {
-    super(containerModel, dockerService);
+    super(containerModel, dockerStreamStorage, dockerService);
   }
 }

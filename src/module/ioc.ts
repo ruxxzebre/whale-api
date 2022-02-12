@@ -23,6 +23,7 @@ import './container/container.controller';
 import './log/logs.controller';
 import './token/token.controller';
 import { PrismaClient } from '@prisma/client';
+import { DockerStreamStorage } from '@module/streamStorage';
 // import { Context } from 'inversify/lib/planning/context';
 // import Factory = interfaces.Factory;
 
@@ -47,6 +48,9 @@ export const createContainer = (): InversifyContainer => {
   container.bind<IContainerModel>('ContainerModel').to(PrismaContainerModel);
   container.bind<ILogsService>('LogsService').to(LogsService);
   container.bind<TokenService>('TokenService').to(TokenService);
+  container
+    .bind<DockerStreamStorage>('DockerStreamStorage')
+    .to(DockerStreamStorage);
   container.load(buildProviderModule());
 
   container.bind<IContainerService>('ContainerService').to(ContainerService);
