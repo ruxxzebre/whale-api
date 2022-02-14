@@ -1,5 +1,6 @@
 import * as Stream from 'stream';
 import { logger } from '@config/logger';
+import { injectable } from 'inversify';
 
 type ContainerID = string;
 export enum ContainerStreamTypes {
@@ -14,8 +15,17 @@ type ContainerStreams = {
 };
 type ContainersAttachStreamsMap = Record<ContainerID, ContainerStreams>;
 
+@injectable()
 export class DockerStreamStorage {
-  private storage: ContainersAttachStreamsMap = {};
+  private static instance: DockerStreamStorage;
+  private static storage: ContainersAttachStreamsMap = {};
+
+  static getInstance(): DockerStreamStorage {
+    if (!DockerStreamStorage.instance) {
+      DockerStreamStorage.instance = new DockerStreamStorage();
+    }
+    return DockerStreamStorage.instance;
+  }
 
   addContainerStreamsToMap = (
     containerId: ContainerID,
@@ -23,7 +33,7 @@ export class DockerStreamStorage {
     errStream: Stream.PassThrough,
     attachStream: NodeJS.ReadWriteStream,
   ): void => {
-    this.storage[containerId] = {
+    DockerStreamStorage.storage[containerId] = {
       [ContainerStreamTypes.OUT]: outStream,
       [ContainerStreamTypes.ERR]: errStream,
       [ContainerStreamTypes.ATTACH]: attachStream,
@@ -31,11 +41,11 @@ export class DockerStreamStorage {
   };
 
   removeContainerFromStreamsMap = (containerId: ContainerID): void => {
-    delete this.storage[containerId];
+    delete DockerStreamStorage.storage[containerId];
   };
 
   getContainerStreams = (containerId: ContainerID): ContainerStreams | null => {
-    return this.storage[containerId] || null;
+    return DockerStreamStorage.storage[containerId] || null;
   };
 
   isAttached = (containerId: ContainerID): boolean => {

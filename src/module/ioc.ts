@@ -50,7 +50,7 @@ export const createContainer = (): InversifyContainer => {
   container.bind<TokenService>('TokenService').to(TokenService);
   container
     .bind<DockerStreamStorage>('DockerStreamStorage')
-    .to(DockerStreamStorage);
+    .toDynamicValue(() => DockerStreamStorage.getInstance());
   container.load(buildProviderModule());
 
   container.bind<IContainerService>('ContainerService').to(ContainerService);

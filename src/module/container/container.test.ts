@@ -10,6 +10,7 @@ import {
 import { IContainer, IContainerModel } from '@module/container/container.model';
 import { Container } from '@prisma/client';
 import Docker from 'dockerode';
+import { DockerStreamStorage } from '@module/streamStorage';
 
 jest.useFakeTimers();
 
@@ -108,6 +109,7 @@ describe('Container Suite', () => {
       controller = new ContainerController(
         new ContainerService(
           new ContainerModelMock(),
+          DockerStreamStorage.getInstance(),
           new Docker(dockerOptions),
         ),
       );
@@ -133,10 +135,15 @@ describe('Container Suite', () => {
     });
   });
   // describe('Container Service', () => {});
-  /* describe('Container Utilities', () => {
-      it('Should add streams to a map', () => {
+  describe('Container Stream Storage', () => {
+    let dockerss: DockerStreamStorage;
 
-      });
+    beforeAll(() => {
+      dockerss = DockerStreamStorage.getInstance();
     });
-     */
+
+    it('Should return null for nonexistent entry', () => {
+      expect(dockerss.getContainerStreams('')).toBeNull();
+    });
+  });
 });
