@@ -1,6 +1,5 @@
 import { ContainerController } from './container.controller';
 import { ContainerService } from '@module/container/container.service';
-import { dockerOptions } from '@config/dockerConfig';
 import Joi from 'joi';
 import {
   Context,
@@ -11,6 +10,8 @@ import { IContainer, IContainerModel } from '@module/container/container.model';
 import { Container } from '@prisma/client';
 import Docker from 'dockerode';
 import { DockerStreamStorage } from '@module/streamStorage';
+import containersMock from '../../../__tests__/docker.mock.json';
+import { DockerService } from '@module/docker/docker.service';
 
 jest.useFakeTimers();
 
@@ -45,6 +46,18 @@ class ContainerModelMock implements IContainerModel {
     if (typeof id === 'number')
       this.storage = this.storage.filter((c) => c.id !== id) || null;
     return container;
+  }
+}
+
+class DockerServiceMock {
+  private _containers: Docker.Container[] =
+    containersMock as unknown as Docker.Container[];
+
+  listContainers() {
+    return this._containers;
+  }
+  getContainer(id: unknown) {
+    return this._containers.find((c) => c.id === id) || null;
   }
 }
 
@@ -110,14 +123,13 @@ describe('Container Suite', () => {
         new ContainerService(
           new ContainerModelMock(),
           DockerStreamStorage.getInstance(),
-          new Docker(dockerOptions),
+          new DockerServiceMock() as unknown as DockerService,
         ),
       );
     });
 
     it('Should return list of containers', async () => {
       const list = await controller.getListOfContainers();
-      console.log(list);
       expect(Array.isArray(list)).toBeTruthy();
     });
 
