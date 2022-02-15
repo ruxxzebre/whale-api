@@ -81,7 +81,7 @@ describe('Container Suite', () => {
 
     let ContainerModel: IContainerModel;
 
-    beforeEach(() => {
+    beforeAll(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       ContainerModel = new ContainerModelMock();
@@ -118,7 +118,7 @@ describe('Container Suite', () => {
     );
     let controller: ContainerController;
 
-    beforeEach(() => {
+    beforeAll(() => {
       controller = new ContainerController(
         new ContainerService(
           new ContainerModelMock(),
@@ -146,7 +146,21 @@ describe('Container Suite', () => {
       return true;
     });
   });
-  // describe('Container Service', () => {});
+  describe('Container Service', () => {
+    let containerService: ContainerService;
+
+    beforeAll(() => {
+      containerService = new ContainerService(
+        new ContainerModelMock(),
+        DockerStreamStorage.getInstance(),
+        new DockerServiceMock() as unknown as DockerService,
+      );
+    });
+
+    it('Should fail', async () => {
+      await containerService.checkContainerHealth(containersMock[0].Id);
+    });
+  });
   describe('Container Stream Storage', () => {
     let dockerss: DockerStreamStorage;
 
